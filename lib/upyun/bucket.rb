@@ -48,7 +48,9 @@ module Upyun
           'Content-Type' => 'application/x-www-form-urlencoded'
         }
 
-        http.request_post(uri.request_uri, "purge=" + URI.encode_www_form_component(urls), headers)    
+        response = http.request_post(uri.request_uri, "purge=" + URI.encode_www_form_component(urls), headers)
+        puts "status:#{response.status},body:#{response.body}"    
+        response
       end  
     end
 
