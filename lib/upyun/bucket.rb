@@ -49,7 +49,7 @@ module Upyun
         }
 
         response = http.request_post(uri.request_uri, "purge=" + URI.encode_www_form_component(urls), headers)
-        puts "status:#{response.status},body:#{response.body}"    
+        puts "status:#{response.code},body:#{response.body}"    
         response
       end  
     end
