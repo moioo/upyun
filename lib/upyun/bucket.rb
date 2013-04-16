@@ -36,6 +36,22 @@ module Upyun
       end
     end
 
+    def clear(urls)
+      url = 'http://purge.upyun.com/purge/'
+      uri = URI.parse(URI.encode(url))
+      urls = urls.join "\n"
+      Net::HTTP.start(uri.host, uri.port) do |http|
+        date = get_gmt_date
+        headers = {
+          'Date' => date,
+          'Authorization' => sign_clear(get_gmt_date, urls),
+          'Content-Type' => 'application/x-www-form-urlencoded'
+        }
+
+        http.request_post(uri.request_uri, "purge=" + URI.encode_www_form_component(urls), headers)    
+      end  
+    end
+
     # 生成api使用的policy 以及 signature  可以是图片或者是文件附件 图片最大为2M 文件附件最大为5M
     def api_form_params(file_type = "pic", notify_url = "", return_url = "", expire_date = 1.days)
       policy_doc = {
@@ -82,6 +98,11 @@ module Upyun
     def sign(method, date, url, length)
       sign = "#{method}&#{url}&#{date}&#{length}&#{password}"
       "UpYun #{@username}:#{Digest::MD5.hexdigest(sign)}"
+    end
+
+    def sign_clear(date,url)
+      sign = "#{url}&#{@bucketname}&#{date}&#{@password}"
+      "UpYun #{@bucketname}:#{@username}:#{Digest::MD5.hexdigest(sign)}"
     end
   end
 end
